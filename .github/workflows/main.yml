@@ -1,0 +1,35 @@
+name: T1_CI
+# Controls when the workflow will run
+on:
+ # Triggers the workflow on push request events
+ [push]
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+ build:
+ runs-on: macos-latest
+ strategy:
+ #fail-fast :false
+ matrix:
+ python-version: ["3.11"]
+ # Steps represent a sequence of tasks that will be executed as part of the job
+ steps:
+ - uses: actions/checkout@v3
+
+ - name: Set up Python ${{ matrix.python-version}}
+ uses: actions/setup-python@v3
+ with:
+ python-version: ${{ matrix.python-version}}
+
+ - name: Install dependencies
+ run: |
+ python -m pip install --upgrade pip
+ pip install flake8 pytest
+ if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+ - name: Lint with flake8
+ run: |
+ flake8 .
+
+ - name: Test Hello world
+ run: |
+ python Hello.py
